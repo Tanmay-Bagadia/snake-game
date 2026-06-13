@@ -1,66 +1,51 @@
 #include "game.h"
-#include <cstdlib>
-#include <iostream>
+#include <random>
 
 Game::Game(int w, int h)
 {
     width = w;
     height = h;
-
-    current_dir = RIGHT;
+    score = 0;
+    current_dir = STOP;
     game_over = false;
 
     int start_x = width / 2;
     int start_y = height / 2;
 
-    // Initialize a length-3 snake
-    snake.push_back({start_x, start_y});     // Head
-    snake.push_back({start_x - 1, start_y}); // Body
-    snake.push_back({start_x - 2, start_y}); // Tail
+    snake.push_back({start_x, start_y});
+    snake.push_back({start_x - 1, start_y});
+    snake.push_back({start_x - 2, start_y});
 
     spawnApple();
 }
 
 void Game::update()
 {
-
     if (game_over || current_dir == STOP)
-    {
         return;
-    }
 
     Point new_head = snake.front();
 
     switch (current_dir)
     {
-    case UP:
-        new_head.y -= 1;
-        break;
-    case DOWN:
-        new_head.y += 1;
-        break;
-    case RIGHT:
-        new_head.x += 1;
-        break;
-    case LEFT:
-        new_head.x -= 1;
-        break;
-    case STOP:
-        break;
+    case UP:    new_head.y -= 1; break;
+    case DOWN:  new_head.y += 1; break;
+    case RIGHT: new_head.x += 1; break;
+    case LEFT:  new_head.x -= 1; break;
+    case STOP:  break;
     }
 
-    if (new_head.x <= 0 || new_head.x >= width || new_head.y <= 0 || new_head.y >= height)
+    if (new_head.x <= 1 || new_head.x >= width ||
+        new_head.y <= 1 || new_head.y >= height)
     {
-
-        std::cout << "\033[1;1HDEBUG: Died at " << new_head.x << "," << new_head.y << std::flush;
         game_over = true;
         return;
     }
-    for (size_t i = 1; i < snake.size() - 1; i++)
+
+    for (size_t i = 0; i < snake.size() - 1; i++)
     {
         if (new_head.x == snake[i].x && new_head.y == snake[i].y)
         {
-            std::cout << "\033[5;5H Collision at: " << new_head.x << "," << new_head.y << std::flush;
             game_over = true;
             return;
         }
@@ -70,6 +55,7 @@ void Game::update()
 
     if (new_head.x == apple.x && new_head.y == apple.y)
     {
+        score++;
         spawnApple();
     }
     else
@@ -85,41 +71,38 @@ void Game::setDirection(Direction d)
         current_dir = d;
         return;
     }
-
     if (current_dir + d == 0)
-    {
         return;
-    }
-
     current_dir = d;
 }
 
 void Game::spawnApple()
 {
-    bool valid_pos = false;
-    int temp_x, temp_y;
+    static std::mt19937 rng(std::random_device{}());
+    std::uniform_int_distribution<int> dist_x(2, width - 1);
+    std::uniform_int_distribution<int> dist_y(2, height - 1);
 
+    bool valid_pos = false;
     while (!valid_pos)
     {
-        temp_x = (rand() % (width - 2)) + 1;
-        temp_y = (rand() % (height - 2)) + 1;
+        apple.x = dist_x(rng);
+        apple.y = dist_y(rng);
 
         valid_pos = true;
-
         for (size_t i = 0; i < snake.size(); i++)
         {
-            if (snake[i].x == temp_x && snake[i].y == temp_y)
+            if (snake[i].x == apple.x && snake[i].y == apple.y)
             {
                 valid_pos = false;
                 break;
             }
         }
     }
-
-    apple.x = temp_x;
-    apple.y = temp_y;
 }
 
 const std::deque<Point> &Game::getSnake() const { return snake; }
 Point Game::getApple() const { return apple; }
 bool Game::isGameOver() const { return game_over; }
+int Game::getWidth() const { return width; }
+int Game::getHeight() const { return height; }
+int Game::getScore() const { return score; }
