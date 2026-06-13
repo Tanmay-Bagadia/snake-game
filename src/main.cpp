@@ -49,6 +49,12 @@ int main()
 
         if (game.isGameOver())
         {
+            std::cout << "\033[1;1HDEBUG: Game Over triggered!" << std::endl;
+            break;
+        }
+
+        if (game.isGameOver())
+        {
             break;
         }
 
