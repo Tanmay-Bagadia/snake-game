@@ -53,11 +53,6 @@ int main()
             break;
         }
 
-        if (game.isGameOver())
-        {
-            break;
-        }
-
         renderer.draw(game);
 
         std::this_thread::sleep_for(std::chrono::milliseconds(100));

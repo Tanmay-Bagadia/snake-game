@@ -1,5 +1,6 @@
 #include "game.h"
 #include <cstdlib>
+#include <iostream>
 
 Game::Game(int w, int h)
 {
@@ -48,17 +49,18 @@ void Game::update()
         break;
     }
 
-    if (new_head.x <= 0 || new_head.x >= width ||
-        new_head.y <= 0 || new_head.y >= height)
+    if (new_head.x <= 0 || new_head.x >= width || new_head.y <= 0 || new_head.y >= height)
     {
+
+        std::cout << "\033[1;1HDEBUG: Died at " << new_head.x << "," << new_head.y << std::flush;
         game_over = true;
         return;
     }
-
-    for (size_t i = 0; i < snake.size(); i++)
+    for (size_t i = 1; i < snake.size() - 1; i++)
     {
         if (new_head.x == snake[i].x && new_head.y == snake[i].y)
         {
+            std::cout << "\033[5;5H Collision at: " << new_head.x << "," << new_head.y << std::flush;
             game_over = true;
             return;
         }
