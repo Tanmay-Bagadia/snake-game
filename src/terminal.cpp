@@ -12,6 +12,9 @@ Terminal ::Terminal()
 
     raw.c_lflag &= ~(ICANON | ECHO);
 
+    raw.c_cc[VMIN] = 0;
+    raw.c_cc[VTIME] = 0;
+
     tcsetattr(STDIN_FILENO, TCSANOW, &raw);
 
     int flags = fcntl(STDIN_FILENO, F_GETFL, 0);
