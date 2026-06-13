@@ -27,4 +27,6 @@ public:
     const std::deque<Point> &getSnake() const;
     Point getApple() const;
     bool isGameOver() const;
+    int getWidth() const { return width; }
+    int getHeight() const { return height; }
 };
