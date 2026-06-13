@@ -1,22 +1,20 @@
 #include "terminal.h"
+#include "game.h"
+#include "renderer.h"
 #include <iostream>
+#include <unistd.h>
 #include <thread>
 #include <chrono>
-#include <unistd.h>
 
 int main()
 {
 
     Terminal term;
-
-    int counter = 0;
+    Game game(40, 20);
+    Renderer renderer;
 
     while (true)
     {
-
-        std::cout << "Engine Running. Tick: " << counter++ << "\r" << std::flush;
-
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
         char c;
 
@@ -24,11 +22,40 @@ int main()
         {
             if (c == 'q')
             {
-                std::cout << "\nQuit command received. Shutting down." << std::endl;
                 break;
             }
+            else if (c == 'w')
+            {
+                game.setDirection(UP);
+            }
+            else if (c == 's')
+            {
+                game.setDirection(DOWN);
+            }
+            else if (c == 'a')
+            {
+                game.setDirection(LEFT);
+            }
+            else if (c == 'd')
+            {
+                game.setDirection(RIGHT);
+            }
         }
+
+        game.update();
+
+        if (game.isGameOver())
+        {
+            break;
+        }
+
+        renderer.draw(game);
+
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }
+
+    std::cout << "\033[2J\033[H";
+    std::cout << "Game Over! Thanks for playing." << std::endl;
 
     return 0;
 }
