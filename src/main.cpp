@@ -5,9 +5,12 @@
 #include <unistd.h>
 #include <thread>
 #include <chrono>
+#include <ctime>
 
 int main()
 {
+
+    srand(time(NULL));
 
     Terminal term;
     Game game(40, 20);
